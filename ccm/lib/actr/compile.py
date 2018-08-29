@@ -129,4 +129,3 @@ class PMCompile(ProceduralSubModule):
             for a in self.parent._adaptors:
                 a.create(p,parents=[pre,post])
             self.parent._productions.append(p)
-
