@@ -10,23 +10,27 @@ class CompiledProduction(Production):
         self.bound=None
 
         code1=[]
-        for k,v in pre_bound.items():
+        for k,v in list(pre_bound.items()):
             code1.append(' %s=%s'%(k,repr(v)))
         code1.append(' if True:  # compiled from %s'%pre.name)
+        added_line = False
         for line in pre.code.splitlines():
             for k in keep:
                 if line.strip().startswith(k):
                     code1.append('  '+line)
+                    added_line = True
                     break
+        if not added_line:
+            code1.append('  pass')
 
         code1='\n'.join(code1)
-        for k,v in pre_bound.items():
+        for k,v in list(pre_bound.items()):
             code1=code1.replace('?'+k,v)
 
 
 
         code2=[]
-        for k,v in post_bound.items():
+        for k,v in list(post_bound.items()):
             code2.append(' %s=%s'%(k,repr(v)))
         code2.append(' if True:  # compiled from %s'%post.name)
         for line in post.code.splitlines():
@@ -34,7 +38,7 @@ class CompiledProduction(Production):
                 code2.append('  '+line)
 
         code2='\n'.join(code2)
-        for k,v in post_bound.items():
+        for k,v in list(post_bound.items()):
             code2=code2.replace('?'+k,v)
 
         self.code='if True:\n%s\n%s'%(code1,code2)
@@ -44,8 +48,8 @@ class CompiledProduction(Production):
 
         keys=list(pre.keys)
         patterns={}
-        for buf,pat in pre.pattern_specs.items():
-            for k,v in pre_bound.items():
+        for buf,pat in list(pre.pattern_specs.items()):
+            for k,v in list(pre_bound.items()):
                 pat=pat.replace('?'+k,v)
             patterns[buf]=pat
 
@@ -54,7 +58,7 @@ class CompiledProduction(Production):
             elif m not in keys:
                 keys.append(m)
                 pat=post.pattern_specs[m]
-                for k,v in post_bound.items():
+                for k,v in list(post_bound.items()):
                     pat=pat.replace('?'+k,v)
                 patterns[buf]=pat
 

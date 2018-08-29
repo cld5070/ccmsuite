@@ -19,7 +19,7 @@ class TestNEFSamples(unittest.TestCase):
     def test_ball(self):
         s=makeGenerator('Ball',100,None).get(100)
         for v in s.T:
-            self.assert_(numpy.linalg.norm(v)<1)
+            self.assertTrue(numpy.linalg.norm(v)<1)
 
     def test_grid(self):
         s=makeGenerator('Grid',2,None).get(121)
@@ -40,9 +40,9 @@ class TestNEFSamples(unittest.TestCase):
         s=makeGenerator('Cube',3,None).get(1000)
         for v in s.T:
             x,y,z=v
-            self.assert_(-1<x<1)
-            self.assert_(-1<y<1)
-            self.assert_(-1<z<1)
+            self.assertTrue(-1<x<1)
+            self.assertTrue(-1<y<1)
+            self.assertTrue(-1<z<1)
             
     def test_repeatability(self):
         r1=makeGenerator('Sphere',10,1)

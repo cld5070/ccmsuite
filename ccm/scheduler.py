@@ -18,14 +18,14 @@ class Event:
     self.name=getattr(func,'func_name',None)
 
     try:
-       code=func.func_code
+       code=func.__code__
     except AttributeError:
        try:
-          code=func.__call__.im_func.func_code
+          code=func.__call__.__func__.__code__
        except:
           code=None
     if code and code.co_flags&0x20==0x20:    # check for generator
-        func=func(*args,**keys).next
+        func=func(*args,**keys).__next__
         args=[]
         keys={}
         self.generator=True
@@ -38,8 +38,16 @@ class Event:
     self.group=()
     self.cancelled=False
     self.parent=None
-  def __cmp__(self,other):
-    return cmp((self.time,-self.priority),(other.time,-other.priority))
+
+  def __eq__(self, other):
+    return ((self.time,-self.priority) == (other.time,-other.priority))
+
+  def __gt__(self, other):
+    return ((self.time,-self.priority) > (other.time,-other.priority))
+
+  def __lt__(self, other):
+    return ((self.time,-self.priority) < (other.time,-other.priority))
+
   def __repr__(self):
     return '<%s %x %5.3f>'%(self.name,id(self.func),self.time)
 
@@ -55,7 +63,7 @@ class Scheduler:
         self.stop_flag=False
         self.log=logger.log_proxy
     def extend(self,other):
-        for k,v in other.triggers.items():
+        for k,v in list(other.triggers.items()):
             if k not in self.triggers:
                 self.triggers[k]=v
             else:

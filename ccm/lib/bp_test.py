@@ -1,4 +1,4 @@
-import backprop
+from . import backprop
 import random
 
 
@@ -15,7 +15,7 @@ def make_data():
 
 for i in range(10000):
     #print make_data()
-    print(i, nn.trainAll(make_data(), learningRate=0.005))
+    print((i, nn.trainAll(make_data(), learningRate=0.005)))
 
 for x in [[-1], [-.33], [.33], [1]]:
-    print(nn.testOne(x, [0])[1])
+    print((nn.testOne(x, [0])[1]))

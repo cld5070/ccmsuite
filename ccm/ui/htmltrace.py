@@ -205,7 +205,7 @@ class HTMLTrace:
         
     
   def generate(self,filename):
-    keys=self.trace.keys()
+    keys=list(self.trace.keys())
     fixed_keys=self.trace.fixed_keys()
     fixed_keys.sort()
     keys=[k for k in keys if k not in fixed_keys]
@@ -251,6 +251,6 @@ class HTMLTrace:
              ]
            ]  
     
-    print>>f,page
+    print(page, file=f)
     
     

@@ -8,7 +8,7 @@ class MyModel(ACTR):
     goal=Buffer()
     
     def greeting(goal='action:greet'):
-        print "Hello"
+        print("Hello")
         goal.clear()
         
 # run the model        

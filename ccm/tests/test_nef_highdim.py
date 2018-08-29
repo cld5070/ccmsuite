@@ -21,11 +21,11 @@ class TestNEF(unittest.TestCase):
             print(x)
             n1.set(x)
             n1.tick()
-            print(1,n1.value())
+            print((1,n1.value()))
 
             n2.set(x)
             n2.tick()
-            print(2,n2.value())
+            print((2,n2.value()))
 
 
             #self.assertAlmostEqual(n1.value()[0],n2.value()[0],1)

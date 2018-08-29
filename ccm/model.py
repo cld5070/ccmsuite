@@ -1,4 +1,4 @@
-from __future__ import generators
+
 
 from . import scheduler
 from . import logger
@@ -11,7 +11,7 @@ class MethodWrapper:
   def __init__(self,obj,func,name):
       self.func=func
       self.obj=obj
-      self.func_name=name
+      self.__name__=name
       self.begins=scheduler.Trigger(name+' begin')
       self.ends=scheduler.Trigger(name+' end')
       self.default_trigger=self.ends
@@ -29,13 +29,13 @@ class MethodGeneratorWrapper(MethodWrapper):
   def __call__(self,*args,**keys):
       return self.obj.sch.add(self._generator,args=args,keys=keys)
   def __str__(self):
-      return '<MGW %s %s>'%(self.obj,self.func_name)
+      return '<MGW %s %s>'%(self.obj,self.__name__)
 
 def log_everything(model,log=None):
   if log is None: log=logger.log_proxy
   if not hasattr(model,'log'): model.run(limit=0)
   model.log=log
-  for k,v in model.__dict__.items():
+  for k,v in list(model.__dict__.items()):
     if k[0]!='_' and k!='parent':
       if isinstance(v,Model) and v.parent is model:
         log_everything(v,getattr(log,k))
@@ -49,7 +49,7 @@ class Model:
 
     def __init__(self,log=None,**keys):
         self.__init_log=log
-        for k,v in keys.items():
+        for k,v in list(keys.items()):
           setattr(self,k,v)
 
     def __convert(self,parent=None,name=None):
@@ -62,11 +62,11 @@ class Model:
 
         methods={}
         objects={}
-        for klass in inspect.getmro(self.__class__):
+        for klass in inspect.getmro(self.__class__)[:-1]:
             if klass is not Model:
                 for k,v in inspect.getmembers(klass):
                     if k[0]!='_':
-                        if inspect.ismethod(v):
+                        if inspect.isfunction(v):
                             if k not in ['run','now','get_children'] and k not in methods and klass is not Model:
                                 methods[k]=v
                         else:
@@ -98,7 +98,7 @@ class Model:
 
         self._convert_info(objects,methods)
 
-        for name,obj in objects.items():
+        for name,obj in list(objects.items()):
             if isinstance(obj,Model):
                 if not obj.__converted:
                     obj.__convert(self,name)
@@ -113,8 +113,8 @@ class Model:
 
 
         if self._convert_methods:
-          for name,func in methods.items():
-              if func.im_func.func_code.co_flags&0x20==0x20:
+          for name,func in list(methods.items()):
+              if func.__code__.co_flags&0x20==0x20:
                   w=MethodGeneratorWrapper(self,func,name)
               else:
                   w=MethodWrapper(self,func,name)
@@ -123,7 +123,7 @@ class Model:
         if self._auto_run_start:
             self.start()
 
-        for k,v in self.__dict__.items():
+        for k,v in list(self.__dict__.items()):
             if k[0]!='_' and k!='parent' and isinstance(v,Model):
                 if not v.__converted:
                     v.__convert(parent=self)
@@ -170,7 +170,7 @@ class Model:
           if self.log: setattr(self.log,key,value)
 
       if key=='log' and value is not None:
-        for k,v in self.__dict__.items():
+        for k,v in list(self.__dict__.items()):
           if k[0]!='_' and k not in ['parent','sch','changes','log','random','name']:
             if isinstance(v,(int,str,float,type(None))):
               setattr(value,k,v)
@@ -180,6 +180,7 @@ class Model:
 
     def start(self):
         pass
+
     def run(self,limit=None,func=None):
         if not self.__converted:
             self.__convert()
@@ -200,7 +201,7 @@ class Model:
 
     def get_children(self):
         try:
-          return self._children.values()
+          return list(self._children.values())
         except AttributeError:
           return []
 

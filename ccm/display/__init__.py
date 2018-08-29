@@ -19,8 +19,9 @@ def display(root,engine=None,**args):
         try:
             m=__import__(module,globals(),locals(),[obj])
             d=getattr(m,obj)(root,**args)
+            print(d)
             return d
         except ImportError as e:
             error+='\n'+str(engines[e])
-        
-    print('Error: could not create display: %s'%error)
+
+    print(('Error: could not create display: %s'%error))

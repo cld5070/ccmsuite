@@ -8,11 +8,11 @@ class MyModel(ACTR):
     goal=Buffer()
     
     def greeting1(goal='action:greet style:casual person:?name'):
-        print "Hi",name
+        print("Hi",name)
         goal.clear()
         
     def greeting2(goal='action:greet style:formal person:?name'):
-        print "Greetings",name
+        print("Greetings",name)
         goal.clear()
         
         

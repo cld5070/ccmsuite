@@ -1,5 +1,6 @@
-import Tkinter
+import tkinter
 import math
+from functools import reduce
 
 class CellularRenderer:
     def __init__(self,world,canvas):
@@ -33,7 +34,7 @@ class CellularRenderer:
 
     def render(self,canvas):
         world=self.world
-        for (i,j),(sq,c) in self.squares.items():
+        for (i,j),(sq,c) in list(self.squares.items()):
                 color=world.grid[j][i].color
                 if callable(color): color=color()
                 if c!=color:
@@ -109,7 +110,7 @@ class CellularRenderer:
         if self.world.directions==6 and y%2==1:
             xpts=tuple(xx+size/4 for xx in xpts)
 
-        pts=zip(xpts,ypts)
+        pts=list(zip(xpts,ypts))
         pts=reduce(lambda a,b:a+b,pts)
         return pts
             
